@@ -6,6 +6,7 @@ import android.security.keystore.KeyProperties
 import android.security.keystore.KeyProtection
 import java.security.Key
 import java.security.KeyStore
+import java.util.Date
 import javax.crypto.SecretKey
 
 class KeyStoreWrapper(
@@ -14,28 +15,19 @@ class KeyStoreWrapper(
     fun storeKey(
         alias: String,
         key: SecretKey,
-        purposes: Int = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
-    ) {
-        storeKey(
-            alias = alias,
-            key = key,
-            purposes = purposes,
-            blockMode = null,
-            padding = null,
-            authentication = null,
-            storeInStrongBoxIfAvailable = false,
-            unlockedDeviceRequired = false,
-        )
-    }
-
-    fun storeKey(
-        alias: String,
-        key: SecretKey,
-        purposes: Int = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
-        blockMode: String? = KeyProperties.BLOCK_MODE_GCM,
-        padding: String? = KeyProperties.ENCRYPTION_PADDING_NONE,
-        authentication: UserAuthentication? = null,
         storeInStrongBoxIfAvailable: Boolean = true,
+
+        // Cryptographic key use authorization:
+        purposes: Int = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
+        blockMode: String? = null,
+        padding: String? = null,
+
+        // Validity key use authorization:
+        validFrom: Date? = null,
+        validTo: Date? = null,
+
+        // User authenticated key use authorization:
+        authentication: UserAuthentication? = null,
         unlockedDeviceRequired: Boolean = false,
     ) {
         val keystore = KeyStore.getInstance("AndroidKeyStore").apply {
@@ -52,6 +44,9 @@ class KeyStoreWrapper(
             padding?.let {
                 setEncryptionPaddings(it)
             }
+
+            setKeyValidityStart(validFrom)
+            setKeyValidityEnd(validTo)
 
             authentication?.let {
                 setUserAuthenticationRequired(true)

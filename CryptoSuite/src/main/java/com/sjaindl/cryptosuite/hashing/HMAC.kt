@@ -12,8 +12,8 @@ class HMAC(
         key: ByteArray,
         textToAuthenticate: String,
     ): ByteArray {
+        val mac = Mac.getInstance(algorithm.value)
         val keySpec = SecretKeySpec(key, algorithm.value)
-        val mac  = Mac.getInstance(algorithm.value)
         mac.init(keySpec)
 
         mac.update(textToAuthenticate.toByteArray())

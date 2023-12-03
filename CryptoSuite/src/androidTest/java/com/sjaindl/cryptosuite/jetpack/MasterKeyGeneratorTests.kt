@@ -2,7 +2,6 @@ package com.sjaindl.cryptosuite.jetpack
 
 import android.security.keystore.KeyProperties
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 

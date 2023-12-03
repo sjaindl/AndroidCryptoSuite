@@ -6,7 +6,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 
 class EncryptedSharedPreferencesWrapper(
     private val context: Context,
-
 ) {
     private val masterKeyGenerator: MasterKeyGenerator by lazy {
         MasterKeyGenerator(context = context)
@@ -19,8 +18,8 @@ class EncryptedSharedPreferencesWrapper(
             preferencesName,
             masterKeyAlias,
             context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV, // key encryption
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM, // value encryption
         )
     }
 }

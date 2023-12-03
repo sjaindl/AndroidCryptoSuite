@@ -4,13 +4,13 @@ import com.google.common.truth.Truth.assertThat
 import com.sjaindl.cryptosuite.asymmetric.CryptoConstants.KeySize
 import org.junit.Test
 
-class ECCTests {
+class ECCSignatureTests {
     @Test
     fun testInitialization() {
-        val ecc = ECC()
+        val eccSignature = ECCSignature()
 
-        assertThat(ecc.keyPair.private).isNotNull()
-        assertThat(ecc.keyPair.public).isNotNull()
+        assertThat(eccSignature.keyPair.private).isNotNull()
+        assertThat(eccSignature.keyPair.public).isNotNull()
     }
 
     @Test
@@ -18,15 +18,15 @@ class ECCTests {
         val textToSign = "some important text"
 
         listOf(KeySize.ECC_224, KeySize.ECC_256).forEach {
-            val ecc = ECC(keySize = it)
+            val eccSignature = ECCSignature(keySize = it)
 
-            val signed = ecc.signData(text = textToSign)
+            val signed = eccSignature.sign(text = textToSign)
             assertThat(signed).isNotNull()
 
-            val verified = ecc.verifyData(text = textToSign, signature = signed!!)
+            val verified = eccSignature.verify(text = textToSign, signature = signed)
             assertThat(verified).isTrue()
 
-            val notVerified = ecc.verifyData(text = "some other text", signature = signed)
+            val notVerified = eccSignature.verify(text = "some other text", signature = signed)
             assertThat(notVerified).isFalse()
         }
     }

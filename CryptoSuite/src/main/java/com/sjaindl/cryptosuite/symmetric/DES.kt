@@ -1,11 +1,10 @@
 package com.sjaindl.cryptosuite.symmetric
 
+import android.util.Base64
 import com.sjaindl.cryptosuite.symmetric.CryptoConstants.Algorithm
 import com.sjaindl.cryptosuite.symmetric.CryptoConstants.BlockMode
 import com.sjaindl.cryptosuite.symmetric.CryptoConstants.Padding
-import java.security.MessageDigest
 import java.security.SecureRandom
-import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -39,11 +38,11 @@ class DES(
         }
 
         val ciphertext = encryptionCipher.doFinal(text.toByteArray())
-        return Base64.getEncoder().encodeToString(ciphertext)
+        return Base64.encodeToString(ciphertext, Base64.DEFAULT)
     }
 
     fun decrypt(cipherText: String): String {
-        val plaintext = decryptionCipher.doFinal(Base64.getDecoder().decode(cipherText.toByteArray()))
+        val plaintext = decryptionCipher.doFinal(Base64.decode(cipherText.toByteArray(), Base64.DEFAULT))
         return String(plaintext)
     }
 
@@ -58,7 +57,7 @@ class DES(
     }
 
     private fun initCiphers() {
-        // complete transformation, e.g.: "DES/ECB/PKCS5PADDING"
+        // complete transformation, e.g.: "DES/CBC/PKCS5PADDING"
         val transformation = "${Algorithm.DES.value}/${blockMode.value}/${padding.value}"
         encryptionCipher = Cipher.getInstance(transformation)
         decryptionCipher = Cipher.getInstance(transformation)

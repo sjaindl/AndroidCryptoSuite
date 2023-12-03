@@ -13,8 +13,8 @@ class EncryptedFileWrapper(
 
     fun create(
         file: File,
-        keySetAlias: String? = null, // alias in the SharedPreferences file to store the keyset
-        keySetPrefName: String? = null, // The SharedPreferences file to store the keyset.
+        keySetPrefName: String? = null, // The SharedPreferences file to store the keySet.
+        keySetAlias: String? = null, // alias in the SharedPreferences file to store the keySet
     ): EncryptedFile {
         val masterKeyAlias = masterKeyGenerator.createDefault()
 

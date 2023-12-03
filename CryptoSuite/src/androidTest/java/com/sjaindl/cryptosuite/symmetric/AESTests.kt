@@ -1,6 +1,5 @@
 package com.sjaindl.cryptosuite.symmetric
 
-import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import com.sjaindl.cryptosuite.symmetric.CryptoConstants.BlockMode
 import com.sjaindl.cryptosuite.symmetric.CryptoConstants.Padding
@@ -15,8 +14,6 @@ class AESTests {
         assertThat(aesWithECBMode.initializationVector).isNull()
 
         val aesWithCBCMode = AES(blockMode = BlockMode.CBC)
-        Log.d("****", "${aesWithCBCMode.key.encoded.size}")
-        Log.d("****", "${aesWithCBCMode.initializationVector!!.size}")
         assertThat(aesWithCBCMode.key).isNotNull()
         assertThat(aesWithCBCMode.initializationVector).isNotNull()
     }

@@ -1,6 +1,6 @@
 package com.sjaindl.cryptosuite.symmetric
 
-import android.security.keystore.KeyProperties.KEY_ALGORITHM_3DES
+import com.sjaindl.cryptosuite.symmetric.CryptoConstants.Algorithm
 import com.sjaindl.cryptosuite.symmetric.CryptoConstants.BlockMode
 import com.sjaindl.cryptosuite.symmetric.CryptoConstants.Padding
 import java.security.SecureRandom
@@ -52,13 +52,13 @@ class TripleDES(
     }
 
     private fun initKey() {
-        val keygen = KeyGenerator.getInstance(KEY_ALGORITHM_3DES)
-        key = keygen.generateKey()
+        val keygen = KeyGenerator.getInstance(Algorithm.TRIPLE_DES.value)
+        key = keygen.generateKey() // 3x8 = 24 bytes key
     }
 
     private fun initCiphers() {
         // complete transformation, e.g.: "DESede/ECB/PKCS5PADDING"
-        val transformation = "$KEY_ALGORITHM_3DES/${blockMode.value}/${padding.value}"
+        val transformation = "${Algorithm.TRIPLE_DES.value}/${blockMode.value}/${padding.value}"
         encryptionCipher = Cipher.getInstance(transformation)
         decryptionCipher = Cipher.getInstance(transformation)
 

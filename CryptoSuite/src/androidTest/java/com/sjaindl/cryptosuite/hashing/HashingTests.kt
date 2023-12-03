@@ -8,7 +8,7 @@ import org.junit.Test
 class HashingTests {
     @Test
     fun testHashing() {
-        val plainText = "Hello world!"
+        val text = "Hello world!"
         val md5Hash = Hashing(Algorithm.MD5)
         val sha1Hash = Hashing(Algorithm.SHA1)
         val sha224Hash = Hashing(Algorithm.SHA224)
@@ -16,12 +16,12 @@ class HashingTests {
         val sha384Hash = Hashing(Algorithm.SHA384)
         val sha512Hash = Hashing(Algorithm.SHA512)
 
-        val hashedMd5 = md5Hash.hash(plainText)
-        val hashedSha1 = sha1Hash.hash(plainText)
-        val hashedSha224 = sha224Hash.hash(plainText)
-        val hashedSha256 = sha256Hash.hash(plainText)
-        val hashedSha384 = sha384Hash.hash(plainText)
-        val hashedSha512 = sha512Hash.hash(plainText)
+        val hashedMd5 = md5Hash.hash(text)
+        val hashedSha1 = sha1Hash.hash(text)
+        val hashedSha224 = sha224Hash.hash(text)
+        val hashedSha256 = sha256Hash.hash(text)
+        val hashedSha384 = sha384Hash.hash(text)
+        val hashedSha512 = sha512Hash.hash(text)
 
         hashedMd5.print(algorithm = "MD5")
         hashedSha1.print(algorithm = "SHA-1")

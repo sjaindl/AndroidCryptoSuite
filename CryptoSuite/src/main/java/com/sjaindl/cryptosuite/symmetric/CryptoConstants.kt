@@ -15,7 +15,6 @@ object CryptoConstants {
         CFB(value = "CFB"), // Cipher Feedback Mode
         OFB(value = "OFB"), // Output Feedback Mode
         CTR(value = "CTR"), // Counter Mode
-        //GCM(value = "GCM"), // Galois Counter Mode
     }
 
     enum class Padding(val value: String) {

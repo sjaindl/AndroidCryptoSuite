@@ -1,10 +1,10 @@
 package com.sjaindl.cryptosuite.asymmetric
 
-import android.security.keystore.KeyProperties.KEY_ALGORITHM_RSA
+import android.util.Base64
+import com.sjaindl.cryptosuite.asymmetric.CryptoConstants.Algorithm
 import com.sjaindl.cryptosuite.asymmetric.CryptoConstants.KeySize
 import java.security.KeyPair
 import java.security.KeyPairGenerator
-import java.util.Base64
 import javax.crypto.Cipher
 
 class RSA(
@@ -21,11 +21,11 @@ class RSA(
 
     fun encrypt(plainText: String): String {
         val ciphertext = encryptionCipher.doFinal(plainText.toByteArray())
-        return Base64.getEncoder().encodeToString(ciphertext)
+        return Base64.encodeToString(ciphertext, Base64.DEFAULT)
     }
 
     fun decrypt(cipherText: String): String {
-        val plaintext = decryptionCipher.doFinal(Base64.getDecoder().decode(cipherText.toByteArray()))
+        val plaintext = decryptionCipher.doFinal(Base64.decode(cipherText.toByteArray(), Base64.DEFAULT))
         return String(plaintext)
     }
 
@@ -35,14 +35,14 @@ class RSA(
     }
 
     private fun initKeys() {
-        val generator = KeyPairGenerator.getInstance(KEY_ALGORITHM_RSA)
+        val generator = KeyPairGenerator.getInstance(Algorithm.RSA.value)
         generator.initialize(keySize.value)
         keyPair = generator.generateKeyPair()
     }
 
     private fun initCiphers() {
-        encryptionCipher = Cipher.getInstance(KEY_ALGORITHM_RSA)
-        decryptionCipher = Cipher.getInstance(KEY_ALGORITHM_RSA)
+        encryptionCipher = Cipher.getInstance(Algorithm.RSA.value)
+        decryptionCipher = Cipher.getInstance(Algorithm.RSA.value)
 
         encryptionCipher.init(Cipher.ENCRYPT_MODE, keyPair.public)
         decryptionCipher.init(Cipher.DECRYPT_MODE, keyPair.private)

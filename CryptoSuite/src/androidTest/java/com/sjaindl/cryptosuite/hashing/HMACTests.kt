@@ -5,13 +5,12 @@ import com.sjaindl.cryptosuite.hashing.CryptoConstants.Algorithm
 import com.sjaindl.cryptosuite.print
 import com.sjaindl.cryptosuite.symmetric.AES
 import org.junit.Test
-import java.util.Arrays.asList
-import kotlin.experimental.and
 
 class HMACTests {
     @Test
     fun testHMAC() {
-        val plainText = "Hello world!"
+        val text = "Hello world!"
+
         val key = AES().key.encoded
         
         val md5HMAC = HMAC(Algorithm.HMAC_MD5)
@@ -21,12 +20,12 @@ class HMACTests {
         val sha384HMAC = HMAC(Algorithm.HMAC_SHA384)
         val sha512HMAC = HMAC(Algorithm.HMAC_SHA512)
 
-        val hmacMd5 = md5HMAC.authenticate(key = key, textToAuthenticate = plainText)
-        val hmacSha1 = sha1HMAC.authenticate(key = key, textToAuthenticate = plainText)
-        val hmacSha224 = sha224HMAC.authenticate(key = key, textToAuthenticate = plainText)
-        val hmacSha256 = sha256HMAC.authenticate(key = key, textToAuthenticate = plainText)
-        val hmacSha384 = sha384HMAC.authenticate(key = key, textToAuthenticate = plainText)
-        val hmacSha512 = sha512HMAC.authenticate(key = key, textToAuthenticate = plainText)
+        val hmacMd5 = md5HMAC.authenticate(key = key, textToAuthenticate = text)
+        val hmacSha1 = sha1HMAC.authenticate(key = key, textToAuthenticate = text)
+        val hmacSha224 = sha224HMAC.authenticate(key = key, textToAuthenticate = text)
+        val hmacSha256 = sha256HMAC.authenticate(key = key, textToAuthenticate = text)
+        val hmacSha384 = sha384HMAC.authenticate(key = key, textToAuthenticate = text)
+        val hmacSha512 = sha512HMAC.authenticate(key = key, textToAuthenticate = text)
 
         hmacMd5.print(algorithm = Algorithm.HMAC_MD5.value)
         hmacSha1.print(algorithm = Algorithm.HMAC_SHA1.value)

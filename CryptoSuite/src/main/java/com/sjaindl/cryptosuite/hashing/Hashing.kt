@@ -7,8 +7,8 @@ class Hashing(
     private val algorithm: Algorithm,
 ) {
 
-    fun hash(plainText: String): ByteArray {
-        val md = MessageDigest.getInstance(algorithm.value)
-        return md.digest(plainText.toByteArray())
+    fun hash(text: String): ByteArray {
+        val messageDigest = MessageDigest.getInstance(algorithm.value)
+        return messageDigest.digest(text.toByteArray())
     }
 }

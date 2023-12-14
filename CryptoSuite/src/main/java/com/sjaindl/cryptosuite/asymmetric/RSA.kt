@@ -25,7 +25,9 @@ class RSA(
     }
 
     fun decrypt(cipherText: String): String {
-        val plaintext = decryptionCipher.doFinal(Base64.decode(cipherText.toByteArray(), Base64.DEFAULT))
+        val plaintext = decryptionCipher.doFinal(
+            Base64.decode(cipherText.toByteArray(), Base64.DEFAULT)
+        )
         return String(plaintext)
     }
 

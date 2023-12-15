@@ -53,6 +53,8 @@ class KeyStoreWrapper(
                 setUserAuthenticationParameters(it.timeout, it.types)
             }
 
+            setInvalidatedByBiometricEnrollment(true)
+
             setUnlockedDeviceRequired(unlockedDeviceRequired)
 
             if (storeInStrongBoxIfAvailable && hasStrongBox()) {

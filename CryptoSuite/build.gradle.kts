@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.security)
     implementation(libs.datastore)
     implementation(libs.serialization)
+    implementation(libs.biometrics)
 
     testImplementation(libs.junit)
     testImplementation(libs.truth)

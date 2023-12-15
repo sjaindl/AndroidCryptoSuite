@@ -1,21 +1,22 @@
 [versions]
-agp = "8.1.2"
+agp = "8.2.0"
+appcompat = "1.6.1"
+biometric = "1.2.0-alpha05"
 org-jetbrains-kotlin-android = "1.8.10"
-core-ktx = "1.9.0"
+core-ktx = "1.12.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
 lifecycle-runtime-ktx = "2.6.2"
-activity-compose = "1.8.0"
-compose-bom = "2023.03.00"
-appcompat = "1.6.1"
+activity-compose = "1.8.1"
+compose-bom = "2023.10.01"
 material = "1.10.0"
 truth = "1.1.5"
 security = "1.0.0"
-datastore = "1.0.0"
 kotlinx-serialization = "1.5.1"
 
 [libraries]
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
@@ -31,11 +32,11 @@ ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 security = { group = "androidx.security", name = "security-crypto", version.ref = "security" }
 datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "security" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+biometrics = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
@@ -43,4 +44,3 @@ org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.re
 com-android-library = { id = "com.android.library", version.ref = "agp" }
 
 [bundles]
-

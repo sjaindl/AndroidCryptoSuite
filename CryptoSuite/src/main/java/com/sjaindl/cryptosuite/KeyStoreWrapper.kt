@@ -85,6 +85,14 @@ class KeyStoreWrapper(
         return keystore.containsAlias(alias)
     }
 
+    fun deleteKey(alias: String) {
+        val keystore = KeyStore.getInstance("AndroidKeyStore").apply {
+            load(null)
+        }
+
+        keystore.deleteEntry(alias)
+    }
+
     private fun hasStrongBox(): Boolean {
         return context.packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)
     }

@@ -2,11 +2,10 @@ package com.sjaindl.cryptosuite.biometric
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.security.keystore.UserNotAuthenticatedException
 import android.util.Log
-import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE
 import androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED
@@ -21,6 +20,7 @@ import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
+import javax.crypto.spec.IvParameterSpec
 
 class BiometricWrapper(
     private val activity: FragmentActivity,
@@ -39,6 +39,8 @@ class BiometricWrapper(
         BiometricManager.from(activity)
     }
 
+    private lateinit var iv: ByteArray
+
     fun buildPromptInfo(
         title: String,
         subTitle: String,
@@ -49,6 +51,7 @@ class BiometricWrapper(
             setTitle(title)
             setSubtitle(subTitle)
 
+            // Biometrics only require cancel button text
             if (authenticators.and(DEVICE_CREDENTIAL) == 0) {
                 setNegativeButtonText("Cancel")
             }
@@ -93,12 +96,21 @@ class BiometricWrapper(
         }
     }
 
-    // TODO: get auth type
-
     fun login(
-        promptInfo: BiometricPrompt.PromptInfo
+        promptInfo: BiometricPrompt.PromptInfo,
+        isEncryptMode: Boolean,
+        onSuccess: (Int, BiometricPrompt.CryptoObject?) -> Unit,
     ) {
         val executor = ContextCompat.getMainExecutor(activity)
+
+        // Crypto-based authentication is not supported for Class 2 (Weak) biometrics:
+        val cryptoSupported = promptInfo.allowedAuthenticators in listOf(BIOMETRIC_STRONG, DEVICE_CREDENTIAL, DEVICE_CREDENTIAL or BIOMETRIC_STRONG)
+
+        val crypto = if (cryptoSupported) {
+            getCryptoObject(isEncryptMode = isEncryptMode)
+        } else {
+            null
+        }
 
         val biometricPrompt = BiometricPrompt(
             activity,
@@ -109,35 +121,27 @@ class BiometricWrapper(
                     errorDesc: CharSequence,
                 ) {
                     super.onAuthenticationError(errorCode, errorDesc)
-                    Toast.makeText(activity,
-                        "Authentication error: $errorDesc", Toast.LENGTH_SHORT)
-                        .show()
+                    Log.e(TAG, "Authentication error: $errorDesc")
                 }
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
-                    val plaintext = "Hello world"
-                    //val encoded = Base64.encodeToString(plaintext.toByteArray(), Base64.DEFAULT)
-                    val cipher = result.cryptoObject?.cipher?.doFinal(plaintext.toByteArray())
 
-                    Toast.makeText(activity,
-                        "Authentication succeeded with cipher: $cipher!", Toast.LENGTH_SHORT)
-                        .show()
+                    // In case cipher couldn't be initialized before, init now after successful auth:
+                    val cryptoObject = if (result.cryptoObject == null && cryptoSupported) {
+                        getCryptoObject(isEncryptMode)
+                    } else result.cryptoObject
+
+                    onSuccess(result.authenticationType, cryptoObject)
                 }
 
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
-                    Toast.makeText(activity, "Authentication failed",
-                        Toast.LENGTH_SHORT)
-                        .show()
+                    Log.e(TAG, "Authentication failed")
                 }
             }
         )
 
-        // java.lang.IllegalArgumentException: Crypto-based authentication is not supported for Class 2 (Weak) biometrics.
-        // + mapping
-
-        val crypto = if (promptInfo.allowedAuthenticators.and(BIOMETRIC_WEAK) != 0) null else getCryptoObject()
         if (crypto != null) {
             biometricPrompt.authenticate(
                 promptInfo,
@@ -148,45 +152,56 @@ class BiometricWrapper(
         }
     }
 
-    private fun getCryptoObject(): BiometricPrompt.CryptoObject {
-        if (!keyStoreWrapper.containsKey(KEY_ALIAS)) {
+    private fun getCryptoObject(isEncryptMode: Boolean): BiometricPrompt.CryptoObject? {
+        val key = getSecretKey()
+        val cipher = getCipher()
 
-            generateSecretKey(KeyGenParameterSpec.Builder(
+        try {
+            if (isEncryptMode) {
+                cipher.init(Cipher.ENCRYPT_MODE, key)
+                iv = cipher.iv
+            } else {
+                if (::iv.isInitialized) {
+                    cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(iv))
+                } else {
+                    return null
+                }
+            }
+        } catch (exc: UserNotAuthenticatedException) {
+            Log.e(TAG, "${exc.message}")
+            return null
+        }
+
+        return BiometricPrompt.CryptoObject(cipher)
+    }
+
+    private fun getSecretKey(): SecretKey {
+        if (!keyStoreWrapper.containsKey(KEY_ALIAS)) {
+            return generateSecretKey(KeyGenParameterSpec.Builder(
                 KEY_ALIAS,
                 KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
                 .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
                 .setUserAuthenticationRequired(true)
-                // Invalidate the keys if the user has registered a new biometric
-                // credential, such as a new fingerprint. Can call this method only
-                // on Android 7.0 (API level 24) or higher. The variable
-                // "invalidatedByBiometricEnrollment" is true by default.
+                .setUserAuthenticationParameters(10, KeyProperties.AUTH_DEVICE_CREDENTIAL or KeyProperties.AUTH_BIOMETRIC_STRONG)
                 .setInvalidatedByBiometricEnrollment(true)
                 .build())
         }
 
-        val key = getSecretKey()
-        val cipher = getCipher()
-        cipher.init(Cipher.ENCRYPT_MODE, key)
+        val keyStore = KeyStore.getInstance("AndroidKeyStore")
 
-        return BiometricPrompt.CryptoObject(cipher)
+        keyStore.load(null)
+        return keyStore.getKey(KEY_ALIAS, null) as SecretKey
+    }
+
+    private fun generateSecretKey(keyGenParameterSpec: KeyGenParameterSpec): SecretKey {
+        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+        keyGenerator.init(keyGenParameterSpec)
+        return keyGenerator.generateKey()
     }
 
     private fun getCipher(): Cipher {
         val transformation = "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_CBC}/${KeyProperties.ENCRYPTION_PADDING_PKCS7}"
         return Cipher.getInstance(transformation)
-    }
-
-    private fun generateSecretKey(keyGenParameterSpec: KeyGenParameterSpec) {
-        val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
-        keyGenerator.init(keyGenParameterSpec)
-        keyGenerator.generateKey()
-    }
-
-    private fun getSecretKey(): SecretKey {
-        val keyStore = KeyStore.getInstance("AndroidKeyStore")
-
-        keyStore.load(null)
-        return keyStore.getKey(KEY_ALIAS, null) as SecretKey
     }
 }

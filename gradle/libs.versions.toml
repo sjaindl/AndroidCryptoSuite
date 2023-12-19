@@ -2,6 +2,8 @@
 agp = "8.2.0"
 appcompat = "1.6.1"
 biometric = "1.2.0-alpha05"
+credentials = "1.3.0-alpha01"
+google-id = "1.1.0"
 org-jetbrains-kotlin-android = "1.8.10"
 core-ktx = "1.12.0"
 junit = "4.13.2"
@@ -14,10 +16,17 @@ material = "1.10.0"
 truth = "1.1.5"
 security = "1.0.0"
 kotlinx-serialization = "1.5.1"
+lifecycleVersion = "2.6.1"
 
 [libraries]
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleVersion" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleVersion" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+biometrics = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
+credentials-playservices_auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
+identity-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-id" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
@@ -36,7 +45,6 @@ material = { group = "com.google.android.material", name = "material", version.r
 security = { group = "androidx.security", name = "security-crypto", version.ref = "security" }
 datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "security" }
 serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-biometrics = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

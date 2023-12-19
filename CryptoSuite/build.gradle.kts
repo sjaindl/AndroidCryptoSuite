@@ -41,6 +41,9 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.serialization)
     implementation(libs.biometrics)
+    implementation(libs.credentials)
+    implementation(libs.credentials.playservices.auth)
+    implementation(libs.identity.googleid)
 
     testImplementation(libs.junit)
     testImplementation(libs.truth)
